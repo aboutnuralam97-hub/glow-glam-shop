@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glow & Glam | Cosmetic Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        :root { --primary-pink: #ff85a2; }
+        body { font-family: 'Poppins', sans-serif; background-color: #fff9fa; }
+        .navbar { background: white; border-bottom: 2px solid var(--primary-pink); }
+        
+        /* স্লাইডার ইমেজ সাইজ ঠিক করা */
+        .carousel-item {
+            height: 550px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .product-card {
+            border: none;
+            transition: transform 0.3s;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .product-card:hover { transform: translateY(-10px); }
+        .btn-buy { background-color: var(--primary-pink); color: white; border-radius: 20px; }
+        .btn-buy:hover { background-color: #f06292; color: white; }
+        .card-img-top {
+            height: 250px;
+            object-fit: cover;       
+        }
+        
+        /* সাজেশন্স বক্স ফিক্স */
+        #suggestionBox {
+            background: white;
+            z-index: 1050;
+            border-radius: 0 0 15px 15px;
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+        }
+        .suggestion-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #f0f0f0; }
+        .suggestion-item:hover { background: #fff1f4; color: var(--primary-pink); }
+        @keyframes fadeIn { from {opacity:0;transform:translateY(10px)} to {opacity:1;transform:none} }
+        .payment-label { transition: all 0.2s; border: 2px solid #dee2e6 !important; border-radius: 12px !important; }
+        .btn-check:checked + .payment-label { border-color: #ff85a2 !important; background: #fff0f4; box-shadow: 0 0 0 3px rgba(255,133,162,0.2); }
+        .payment-label:hover { border-color: #ff85a2 !important; }
+    </style>
+</head>
+<body>
+
+<header>
+<nav class="navbar navbar-expand-lg navbar-light sticky-top shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#" style="color: #ff85a2;">
+            <svg width="38" height="38" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="19" cy="19" r="19" fill="#ff85a2"/>
+                <!-- Lipstick body -->
+                <rect x="15" y="18" width="8" height="10" rx="1" fill="white"/>
+                <!-- Lipstick tip -->
+                <path d="M15 18 Q15 12 19 11 Q23 12 23 18 Z" fill="#ffccd5"/>
+                <!-- Lipstick bullet top -->
+                <ellipse cx="19" cy="11" rx="2.5" ry="1.5" fill="#fff0f4"/>
+                <!-- Sparkles -->
+                <text x="6" y="13" font-size="6" fill="white" opacity="0.9">✦</text>
+                <text x="26" y="20" font-size="5" fill="white" opacity="0.7">✦</text>
+                <text x="8" y="28" font-size="4" fill="white" opacity="0.6">✦</text>
+            </svg>
+            <div>
+                <div style="font-size:1.1rem;letter-spacing:2px;font-weight:800;line-height:1;">GLOW <span style="color:#f06292;">&</span> GLAM</div>
+                <div style="font-size:0.6rem;letter-spacing:3px;color:#aaa;font-weight:400;">COSMETICS</div>
+            </div>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link fw-semibold" href="#">Home</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link fw-semibold dropdown-toggle" href="#" id="categoryDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-grid-fill me-1" style="color:#ff85a2;"></i>Category
+                    </a>
+                    <ul class="dropdown-menu shadow border-0 p-2" id="categoryMenu" style="min-width:200px;border-radius:12px;">
+                        <li><a class="dropdown-item rounded-2 py-2" href="#" onclick="filterCategory('All');return false;"><span class="me-2">🌟</span>All Products</a></li>
+                        <li><hr class="dropdown-divider my-1"></li>
+                        <li><a class="dropdown-item rounded-2 py-2" href="#" onclick="filterCategory('Lipstick');return false;"><span class="me-2">💋</span>Lipstick</a></li>
+                        <li><a class="dropdown-item rounded-2 py-2" href="#" onclick="filterCategory('Skincare');return false;"><span class="me-2">🧴</span>Skincare</a></li>
+                        <li><a class="dropdown-item rounded-2 py-2" href="#" onclick="filterCategory('Eyes');return false;"><span class="me-2">👁️</span>Eyes</a></li>
+                        <li><a class="dropdown-item rounded-2 py-2" href="#" onclick="filterCategory('Fragrance');return false;"><span class="me-2">🌸</span>Fragrance</a></li>
+                        <li><a class="dropdown-item rounded-2 py-2" href="#" onclick="filterCategory('Nails');return false;"><span class="me-2">💅</span>Nails</a></li>
+                        <li id="extraCategoryItems"></li>
+                    </ul>
+                </li>
+                <li class="nav-item"><a class="nav-link fw-semibold" href="LogIn.html">Add Product</a></li>
+            </ul>
+
+            <form class="d-flex mx-auto col-lg-5 position-relative">
+                <div class="input-group">
+                    <input id="searchInput" class="form-control" type="search" placeholder="Search cosmetics..." autocomplete="off" style="border-radius: 20px 0 0 20px;">
+                    <button class="btn" style="background: #ff85a2; color: white; border-radius: 0 20px 20px 0;"><i class="bi bi-search"></i></button>
+                </div>
+                <div id="suggestionBox" class="list-group position-absolute w-100 shadow-sm" style="top: 100%; display: none;"></div>
+            </form>
+
+            <div class="d-flex align-items-center ms-lg-3">
+    <button type="button" class="btn position-relative" data-bs-toggle="modal" data-bs-target="#cartModal">
+        <i class="bi bi-cart4" style="font-size: 1.5rem; color: #ff85a2;"></i>
+        <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+    </button>
+</div>
+        </div>
+    </div>
+</nav>
+
+<div id="heroSlider" class="carousel slide carousel-fade" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1200&q=80');">
+            <div class="carousel-caption d-flex h-100 align-items-center justify-content-center">
+                <div class="text-center">
+                    <h1 class="display-3 fw-bold">Reveal Your Inner Beauty</h1>
+                    <p class="lead">Premium Cosmetics for Every Skin Type</p>
+                    <a href="#products" class="btn btn-lg btn-light px-4 py-2" style="color: #ff85a2; font-weight: bold;">Shop Now</a>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=1200&q=80');">
+            <div class="carousel-caption d-flex h-100 align-items-center justify-content-center">
+                <div class="text-center">
+                    <h1 class="display-3 fw-bold">Natural & Organic</h1>
+                    <p class="lead">Pure Skincare for Your Delicate Glow</p>
+                    <a href="#products" class="btn btn-lg btn-light px-4 py-2" style="color: #ff85a2; font-weight: bold;">Explore More</a>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=1200&q=80'); height: 550px; background-size: cover; background-position: center;">
+            <div class="carousel-caption d-flex h-100 align-items-center justify-content-center">
+                <div class="text-center">
+                    <h1 class="display-3 fw-bold">Master Your Makeup</h1>
+                    <p class="lead">Unleash Your Creativity with Bold Colors</p>
+                    <a href="#products" class="btn btn-lg btn-light px-4 py-2" style="color: #ff85a2; font-weight: bold;">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroSlider" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroSlider" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+</div>
+</header>
+
+<!-- PRODUCT DETAILS MODAL -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background:linear-gradient(135deg,#ff85a2,#f48fb1);color:white;">
+                <h5 class="modal-title" id="pmTitle">Product Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-md-5 text-center">
+                        <img id="pmImg" src="" class="img-fluid rounded" style="max-height:280px;object-fit:cover;width:100%;">
+                        <div class="mt-2">
+                            <span id="pmCategory" class="badge" style="background:#ff85a2;"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <h4 id="pmName" class="fw-bold"></h4>
+                        <p id="pmDesc" class="text-muted"></p>
+                        <h3 id="pmPrice" style="color:#ff85a2;" class="fw-bold"></h3>
+                        <hr>
+                        <div id="pmDetails" class="mb-3"></div>
+                        <div class="d-flex gap-2 align-items-center mt-2">
+                        <input type="number" id="pmQty" value="1" min="1" max="99" style="width:70px;border:1px solid #ff85a2;border-radius:12px;padding:8px;text-align:center;font-size:1rem;">
+                        <button class="btn btn-buy flex-grow-1 py-2 fw-bold" id="pmAddCart" style="font-size:1rem;">🛒 Add to Cart</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section id="products" class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">Our Best Sellers</h2>
+        <span id="categoryBadge" class="badge fs-6 px-3 py-2" style="background:#ff85a2;">All Products</span>
+    </div>
+    <div class="row g-4" id="productGrid">
+        
+        <div class="col-md-3 product-col" data-category="Lipstick">
+            <div class="card product-card"
+                data-name="Matte Lipstick"
+                data-desc="Long-lasting & Smudge-proof matte finish lipstick"
+                data-price="৳৮৫০"
+                data-category="Lipstick"
+                data-img="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=500&q=80"
+                data-details="Shade: Deep Red | Finish: Matte | Duration: 8+ Hours | Ingredients: Vitamin E, Shea Butter | Weight: 3.5g">
+                <div class="position-relative" onclick="openProductModal(this.closest('.card'))" style="cursor:pointer;">
+                    <img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Lipstick">
+                    <span class="position-absolute top-0 end-0 m-2 badge" style="background:#ff85a2;">Lipstick</span>
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title" onclick="openProductModal(this.closest(\'.card\'))" style="cursor:pointer;color:#ff85a2;">Matte Lipstick</h5>
+                    <p class="text-muted small">Long-lasting & Smudge-proof</p>
+                    <p class="fw-bold">৳৮৫০</p>
+                    <button class="btn btn-buy w-100">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 product-col" data-category="Skincare">
+            <div class="card product-card"
+                data-name="Organic Serum"
+                data-desc="Brightening serum with Vitamin C & Hyaluronic Acid"
+                data-price="৳১২০০"
+                data-category="Skincare"
+                data-img="https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&w=500&q=80"
+                data-details="Type: Face Serum | Key Ingredients: Vitamin C, Hyaluronic Acid, Niacinamide | Skin Type: All | Size: 30ml | Usage: Apply 2-3 drops daily">
+                <div class="position-relative" onclick="openProductModal(this.closest('.card'))" style="cursor:pointer;">
+                    <img src="https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Serum">
+                    <span class="position-absolute top-0 end-0 m-2 badge" style="background:#ff85a2;">Skincare</span>
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title" onclick="openProductModal(this.closest(\'.card\'))" style="cursor:pointer;color:#ff85a2;">Organic Serum</h5>
+                    <p class="text-muted small">Vitamin C & Hyaluronic</p>
+                    <p class="fw-bold">৳১২০০</p>
+                    <button class="btn btn-buy w-100">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 product-col" data-category="Eyes">
+            <div class="card product-card"
+                data-name="Eyeshadow Palette"
+                data-desc="12 shimmery shades for every eye look"
+                data-price="৳১৫৫০"
+                data-category="Eyes"
+                data-img="https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=500&q=80"
+                data-details="Shades: 12 | Finish: Shimmer & Matte | Pigmentation: High | Size: 15g | Includes: Mirror & Brush">
+                <div class="position-relative" onclick="openProductModal(this.closest('.card'))" style="cursor:pointer;">
+                    <img src="https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Eyeshadow">
+                    <span class="position-absolute top-0 end-0 m-2 badge" style="background:#ff85a2;">Eyes</span>
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title" onclick="openProductModal(this.closest(\'.card\'))" style="cursor:pointer;color:#ff85a2;">Eyeshadow Palette</h5>
+                    <p class="text-muted small">12 Shimmery Shades</p>
+                    <p class="fw-bold">৳১৫৫০</p>
+                    <button class="btn btn-buy w-100">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 product-col" data-category="Skincare">
+            <div class="card product-card"
+                data-name="Gentle Cleanser"
+                data-desc="Soft foam cleanser suitable for all skin types"
+                data-price="৳৬৫০"
+                data-category="Skincare"
+                data-img="https://images.unsplash.com/photo-1627384113743-6bd5a479fffd?auto=format&fit=crop&w=500&q=80"
+                data-details="Type: Face Wash | Skin Type: All | Volume: 150ml | pH: Balanced | Free From: Paraben, Sulfate | Scent: Mild">
+                <div class="position-relative" onclick="openProductModal(this.closest('.card'))" style="cursor:pointer;">
+                    <img src="https://images.unsplash.com/photo-1627384113743-6bd5a479fffd?auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Face Wash">
+                    <span class="position-absolute top-0 end-0 m-2 badge" style="background:#ff85a2;">Skincare</span>
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title" onclick="openProductModal(this.closest(\'.card\'))" style="cursor:pointer;color:#ff85a2;">Gentle Cleanser</h5>
+                    <p class="text-muted small">For All Skin Types</p>
+                    <p class="fw-bold">৳৬৫০</p>
+                    <button class="btn btn-buy w-100">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+                <div class="col-md-3 product-col" data-category="Skincare">
+            <div class="card product-card"
+                data-name="Day Cream"
+                data-desc="Moisturizing day cream for healthy glow skin"
+                data-price="৳৯৫০"
+                data-category="Skincare"
+                data-img="https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&fit=crop&w=500&q=80"
+                data-details="Type: Moisturizer | Skin Type: All | SPF: 15 | Size: 50ml | Key Ingredients: Hyaluronic Acid, Glycerin | Usage: Apply every morning">
+                <div class="position-relative" onclick="openProductModal(this.closest('.card'))" style="cursor:pointer;">
+                    <img src="https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Day Cream">
+                    <span class="position-absolute top-0 end-0 m-2 badge" style="background:#ff85a2;">Skincare</span>
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title" onclick="openProductModal(this.closest(\'.card\'))" style="cursor:pointer;color:#ff85a2;">Day Cream</h5>
+                    <p class="text-muted small">Moisturizing & Glow</p>
+                    <p class="fw-bold">৳৯৫০</p>
+                    <button class="btn btn-buy w-100">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 product-col" data-category="Fragrance">
+            <div class="card product-card"
+                data-name="Floral Perfume"
+                data-desc="Long lasting floral fragrance for everyday elegance"
+                data-price="৳২৫০০"
+                data-category="Fragrance"
+                data-img="https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&w=500&q=80"
+                data-details="Top Notes: Rose, Jasmine | Middle Notes: Lily, Peony | Base Notes: Musk, Sandalwood | Volume: 50ml | Longevity: 8-10 Hours | Type: Eau de Parfum">
+                <div class="position-relative" onclick="openProductModal(this.closest('.card'))" style="cursor:pointer;">
+                    <img src="https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Perfume">
+                    <span class="position-absolute top-0 end-0 m-2 badge" style="background:#ff85a2;">Fragrance</span>
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title" onclick="openProductModal(this.closest(\'.card\'))" style="cursor:pointer;color:#ff85a2;">Floral Perfume</h5>
+                    <p class="text-muted small">Long Lasting Fragrance</p>
+                    <p class="fw-bold">৳২৫০০</p>
+                    <button class="btn btn-buy w-100">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 product-col" data-category="Nails">
+            <div class="card product-card"
+                data-name="Gel Nail Polish"
+                data-desc="High shine gel nail polish with long lasting durability"
+                data-price="৳৩৫০"
+                data-category="Nails"
+                data-img="https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=500&q=80"
+                data-details="Finish: High Gloss | Duration: Up to 2 Weeks | Volume: 12ml | Formula: Chip-resistant | Colors Available: 30+ | UV Cure: Optional">
+                <div class="position-relative" onclick="openProductModal(this.closest('.card'))" style="cursor:pointer;">
+                    <img src="https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Nail Polish">
+                    <span class="position-absolute top-0 end-0 m-2 badge" style="background:#ff85a2;">Nails</span>
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title" onclick="openProductModal(this.closest(\'.card\'))" style="cursor:pointer;color:#ff85a2;">Gel Nail Polish</h5>
+                    <p class="text-muted small">Shiny & Durable</p>
+                    <p class="fw-bold">৳৩৫০</p>
+                    <button class="btn btn-buy w-100">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 product-col" data-category="Skincare">
+            <div class="card product-card"
+                data-name="Clay Mask"
+                data-desc="Deep pore cleansing clay mask for clear skin"
+                data-price="৳৭০০"
+                data-category="Skincare"
+                data-img="https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?auto=format&fit=crop&w=500&q=80"
+                data-details="Type: Clay Mask | Skin Type: Oily, Combination | Size: 100ml | Key Ingredients: Kaolin Clay, Bentonite, Tea Tree Oil | Usage: Apply 2-3 times/week | Leave on: 10-15 mins">
+                <div class="position-relative" onclick="openProductModal(this.closest('.card'))" style="cursor:pointer;">
+                    <img src="https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Face Mask">
+                    <span class="position-absolute top-0 end-0 m-2 badge" style="background:#ff85a2;">Skincare</span>
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title" onclick="openProductModal(this.closest(\'.card\'))" style="cursor:pointer;color:#ff85a2;">Clay Mask</h5>
+                    <p class="text-muted small">Deep Pore Cleansing</p>
+                    <p class="fw-bold">৳৭০০</p>
+                    <button class="btn btn-buy w-100">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- STATS SECTION -->
+<section class="py-5 mt-4" style="background:linear-gradient(135deg,#ff85a2,#f48fb1);">
+    <div class="container">
+        <div class="row text-white text-center g-4">
+            <div class="col-6 col-md-3">
+                <div class="py-3">
+                    <div style="font-size:2.5rem;font-weight:800;" class="counter" data-target="5000">0</div>
+                    <div class="mt-1 opacity-75">Happy Customers</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="py-3">
+                    <div style="font-size:2.5rem;font-weight:800;">83%</div>
+                    <div class="mt-1 opacity-75">👩 Women Shoppers</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="py-3">
+                    <div style="font-size:2.5rem;font-weight:800;">17%</div>
+                    <div class="mt-1 opacity-75">👨 Men Shoppers</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="py-3">
+                    <div style="font-size:2.5rem;font-weight:800;" class="counter" data-target="98">0</div>
+                    <div class="mt-1 opacity-75">% Satisfaction</div>
+                </div>
+            </div>
+        </div>
+        <!-- Progress bars -->
+        <div class="row mt-4 text-white">
+            <div class="col-md-6 mx-auto">
+                <div class="d-flex justify-content-between mb-1"><span>👩 Women</span><span>83%</span></div>
+                <div class="progress mb-3" style="height:10px;border-radius:10px;background:rgba(255,255,255,0.3);">
+                    <div class="progress-bar bg-white" style="width:83%;border-radius:10px;"></div>
+                </div>
+                <div class="d-flex justify-content-between mb-1"><span>👨 Men</span><span>17%</span></div>
+                <div class="progress" style="height:10px;border-radius:10px;background:rgba(255,255,255,0.3);">
+                    <div class="progress-bar bg-white" style="width:17%;border-radius:10px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- LIVE CHAT WIDGET -->
+<div id="liveChatWidget" style="position:fixed;bottom:24px;right:24px;z-index:9999;">
+    <!-- Chat Button -->
+    <button id="chatToggleBtn" onclick="toggleChat()" style="width:60px;height:60px;border-radius:50%;background:#ff85a2;border:none;box-shadow:0 4px 20px rgba(255,133,162,0.5);cursor:pointer;transition:all 0.3s;" title="Live Chat">
+        <span id="chatBtnIcon" style="font-size:1.6rem;">💬</span>
+    </button>
+    <!-- Unread badge -->
+    <span id="chatUnreadBadge" style="position:absolute;top:-4px;right:-4px;background:#ff3b3b;color:white;border-radius:50%;width:20px;height:20px;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:bold;">1</span>
+
+    <!-- Chat Box -->
+    <div id="chatBox" style="display:none;position:absolute;bottom:75px;right:0;width:320px;background:white;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.15);overflow:hidden;animation:fadeIn 0.3s ease;">
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,#ff85a2,#f48fb1);padding:14px 16px;color:white;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                    <div style="width:38px;height:38px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;font-size:1.3rem;">👩</div>
+                    <div>
+                        <div class="fw-bold">Glow & Glam Support</div>
+                        <div style="font-size:0.75rem;opacity:0.9;">🟢 Online — Usually replies instantly</div>
+                    </div>
+                </div>
+                <button onclick="toggleChat()" style="background:none;border:none;color:white;font-size:1.3rem;cursor:pointer;">✕</button>
+            </div>
+        </div>
+        <!-- Messages -->
+        <div id="chatMessages" style="height:260px;overflow-y:auto;padding:14px;background:#f9f9f9;">
+            <div class="chat-msg-bot mb-3">
+                <div style="background:white;border-radius:12px 12px 12px 2px;padding:10px 14px;display:inline-block;box-shadow:0 1px 4px rgba(0,0,0,0.08);max-width:85%;">
+                    👋 হ্যালো! Glow & Glam-এ স্বাগতম! আমি কীভাবে সাহায্য করতে পারি?
+                </div>
+                <div style="font-size:0.7rem;color:#aaa;margin-top:3px;">Support • এখনই</div>
+            </div>
+        </div>
+        <!-- Quick Replies -->
+        <div style="padding:8px 14px;background:white;border-top:1px solid #f0f0f0;">
+            <div style="font-size:0.75rem;color:#aaa;margin-bottom:6px;">দ্রুত প্রশ্ন:</div>
+            <div class="d-flex flex-wrap gap-1">
+                <button onclick="quickReply('অর্ডার ট্র্যাক করতে চাই')" class="btn btn-sm" style="font-size:0.72rem;border:1px solid #ff85a2;color:#ff85a2;border-radius:20px;padding:2px 10px;">📦 অর্ডার ট্র্যাক</button>
+                <button onclick="quickReply('রিটার্ন পলিসি কী?')" class="btn btn-sm" style="font-size:0.72rem;border:1px solid #ff85a2;color:#ff85a2;border-radius:20px;padding:2px 10px;">🔄 Return</button>
+                <button onclick="quickReply('ডেলিভারি কতদিনে?')" class="btn btn-sm" style="font-size:0.72rem;border:1px solid #ff85a2;color:#ff85a2;border-radius:20px;padding:2px 10px;">🚚 Delivery</button>
+            </div>
+        </div>
+        <!-- Input -->
+        <div style="padding:10px 14px;background:white;border-top:1px solid #f0f0f0;display:flex;gap:8px;">
+            <input type="text" id="chatInput" placeholder="মেসেজ লিখুন..." style="flex:1;border:1px solid #eee;border-radius:20px;padding:8px 14px;font-size:0.85rem;outline:none;" onkeypress="if(event.key==='Enter') sendChatMsg()">
+            <button onclick="sendChatMsg()" style="background:#ff85a2;border:none;border-radius:50%;width:38px;height:38px;color:white;font-size:1rem;cursor:pointer;">➤</button>
+        </div>
+    </div>
+</div>
+
+<footer style="background:#f8f8f8;border-top:1px solid #eee;padding:50px 0 0 0;margin-top:60px;">
+    <div class="container">
+        <div class="row g-4 pb-4">
+
+            <!-- Logo + Contact -->
+            <div class="col-md-3">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <svg width="38" height="38" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="19" cy="19" r="19" fill="#ff85a2"/>
+                        <rect x="15" y="18" width="8" height="10" rx="1" fill="white"/>
+                        <path d="M15 18 Q15 12 19 11 Q23 12 23 18 Z" fill="#ffccd5"/>
+                        <ellipse cx="19" cy="11" rx="2.5" ry="1.5" fill="#fff0f4"/>
+                        <text x="6" y="13" font-size="6" fill="white" opacity="0.9">✦</text>
+                        <text x="26" y="20" font-size="5" fill="white" opacity="0.7">✦</text>
+                    </svg>
+                    <div>
+                        <div style="font-size:1rem;font-weight:800;color:#ff85a2;letter-spacing:2px;">GLOW & GLAM</div>
+                        <div style="font-size:0.6rem;letter-spacing:3px;color:#aaa;">COSMETICS</div>
+                    </div>
+                </div>
+                <h6 class="fw-bold mb-3" style="color:#333;">Contact</h6>
+                <p class="text-muted small mb-2">
+                    <i class="bi bi-geo-alt-fill me-1" style="color:#ff85a2;"></i>
+                    Level 4, Mirpur DOHS Cultural Centre,<br>
+                    Road No-09, Pallabi, Dhaka-1216
+                </p>
+                <a href="https://wa.me/8809613100101" target="_blank" class="btn btn-sm rounded-pill px-3 py-2" style="border:2px solid #25d366;color:#25d366;font-weight:600;text-decoration:none;">
+                    <i class="bi bi-whatsapp me-1"></i> 09613 100 101
+                </a>
+            </div>
+
+            <!-- About Us -->
+            <div class="col-md-2">
+                <h6 class="fw-bold mb-3" style="color:#333;">About Us</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="text-muted text-decoration-none footer-link">About Glow & Glam</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted text-decoration-none footer-link">Contact Us</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted text-decoration-none footer-link">Career</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted text-decoration-none footer-link">News & Events</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted text-decoration-none footer-link">FAQ</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted text-decoration-none footer-link">Privacy Policy</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted text-decoration-none footer-link">Terms & Conditions</a></li>
+                </ul>
+            </div>
+
+            <!-- My Account -->
+            <div class="col-md-2">
+                <h6 class="fw-bold mb-3" style="color:#333;">My Account</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="text-muted text-decoration-none footer-link" onclick="new bootstrap.Modal(document.getElementById('adminLoginModal')).show();return false;">Login</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted text-decoration-none footer-link" onclick="showMyOrders();return false;">Order History</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted text-decoration-none footer-link">My Wishlist</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted text-decoration-none footer-link" onclick="showMyOrders();return false;">Track Order</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted text-decoration-none footer-link">Gift Voucher</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted text-decoration-none footer-link">Franchise</a></li>
+                </ul>
+            </div>
+
+            <!-- App Download + Newsletter -->
+            <div class="col-md-5">
+                <h6 class="fw-bold mb-3" style="color:#333;">Download Our App</h6>
+                <div class="d-flex gap-2 mb-4 flex-wrap">
+                    <a href="#" class="d-flex align-items-center gap-2 px-3 py-2 rounded-3 text-decoration-none" style="background:#000;color:white;min-width:140px;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M3.18 23.5c.27.15.58.19.87.1l11.46-11.46L4.05 1.4C3.76 1.31 3.45 1.35 3.18 1.5 2.64 1.8 2.5 2.5 2.5 3.5v17c0 1 .14 1.7.68 2z"/><path d="M16.41 13.41l2.08-2.08-11-6.35-2.08 2.08 11 6.35z" opacity=".5"/><path d="M18.49 11.33l1.94 1.12c.55.32.55.84 0 1.16l-1.94 1.12-2.08-1.7 2.08-1.7z" opacity=".7"/><path d="M5.49 20.93l11-6.35-2.08-1.7-11 6.35 2.08 1.7z" opacity=".5"/></svg>
+                        <div><div style="font-size:0.6rem;opacity:0.8;">GET IT ON</div><div style="font-size:0.9rem;font-weight:700;">Google Play</div></div>
+                    </a>
+                    <a href="#" class="d-flex align-items-center gap-2 px-3 py-2 rounded-3 text-decoration-none" style="background:#000;color:white;min-width:140px;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                        <div><div style="font-size:0.6rem;opacity:0.8;">Download on the</div><div style="font-size:0.9rem;font-weight:700;">App Store</div></div>
+                    </a>
+                </div>
+
+                <h6 class="fw-bold mb-2" style="color:#333;">Get Updates! 💌</h6>
+                <p class="text-muted small mb-2">নতুন product ও offer সবার আগে জানতে subscribe করুন!</p>
+                <div class="d-flex gap-2">
+                    <input type="email" id="newsletterEmail" class="form-control" placeholder="Your email address" style="border-radius:8px;">
+                    <button onclick="subscribeNewsletter()" class="btn fw-bold px-4" style="background:#333;color:white;border-radius:8px;white-space:nowrap;">Subscribe</button>
+                </div>
+                <p id="subscribeMsg" class="text-success small mt-1" style="display:none;">✅ Subscribed successfully!</p>
+
+                <!-- Social -->
+                <div class="mt-3 d-flex gap-3">
+                    <a href="#" style="color:#1877f2;font-size:1.5rem;"><i class="bi bi-facebook"></i></a>
+                    <a href="#" style="color:#e1306c;font-size:1.5rem;"><i class="bi bi-instagram"></i></a>
+                    <a href="#" style="color:#ff0000;font-size:1.5rem;"><i class="bi bi-youtube"></i></a>
+                    <a href="#" style="color:#25d366;font-size:1.5rem;"><i class="bi bi-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div style="background:#333;color:#aaa;padding:14px 0;margin-top:20px;">
+        <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <p class="mb-0 small">Copyright 2026 &copy; Glow & Glam Cosmetics. All Rights Reserved.</p>
+            <p class="mb-0 small">Developed by <a href="https://www.facebook.com/nualam115599" target="_blank" style="color:#ff85a2;">MD.Nur-Alam</a></p>
+        </div>
+    </div>
+</footer>
+
+<style>
+.footer-link:hover { color: #ff85a2 !important; }
+</style>
+
+<script>
+function subscribeNewsletter() {
+    const email = document.getElementById('newsletterEmail').value;
+    if (!email || !email.includes('@')) { alert('Valid email দিন!'); return; }
+    document.getElementById('subscribeMsg').style.display = 'block';
+    document.getElementById('newsletterEmail').value = '';
+}
+</script>
+
+<!-- ===== CART MODAL ===== -->
+<div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cartModalLabel" style="color: #ff85a2;">Selected Products 🛍️</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <ul id="cart-items-list" class="list-group">
+                    <li class="list-group-item text-muted text-center">Your cart is empty!</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn" onclick="openCheckout()" style="background-color: #ff85a2; color: white;">Proceed to Checkout ➜</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== CHECKOUT MODAL ===== -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #ff85a2; color: white;">
+                <h5 class="modal-title">Checkout 🛒</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="checkoutForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Full Name</label>
+                            <input type="text" class="form-control" id="userName" placeholder="Enter your name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Phone Number</label>
+                            <input type="tel" class="form-control" id="userPhone" placeholder="017XXXXXXXX" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Full Address</label>
+                            <textarea class="form-control" id="userAddress" rows="2" placeholder="House, Road, Area..." required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Payment Options -->
+                    <div class="mt-4">
+                        <label class="form-label fw-semibold">Payment Method</label>
+                        <div class="row g-2">
+                            <div class="col-6 col-md-3">
+                                <input type="radio" class="btn-check" name="payment" id="pay_bkash" value="bKash" required>
+                                <label class="btn btn-outline-secondary w-100 py-3 d-flex flex-column align-items-center payment-label" for="pay_bkash">
+                                    <img src="https://www.logo.wine/a/logo/BKash/BKash-Logo.wine.svg" style="height:42px;object-fit:contain;" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                                    <span style="display:none;font-size:1.8rem;background:#e2136e;color:white;border-radius:50%;width:42px;height:42px;line-height:42px;text-align:center;">b</span>
+                                    <span class="fw-bold mt-1" style="color:#e2136e;font-size:0.85rem;">bKash</span>
+                                </label>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="radio" class="btn-check" name="payment" id="pay_nagad" value="Nagad">
+                                <label class="btn btn-outline-secondary w-100 py-3 d-flex flex-column align-items-center payment-label" for="pay_nagad">
+                                    <img src="https://nagad.com.bd/assets/img/logo.png" style="height:42px;object-fit:contain;" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                                    <span style="display:none;font-size:1.8rem;background:#f6891f;color:white;border-radius:50%;width:42px;height:42px;line-height:42px;text-align:center;">N</span>
+                                    <span class="fw-bold mt-1" style="color:#f6891f;font-size:0.85rem;">Nagad</span>
+                                </label>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="radio" class="btn-check" name="payment" id="pay_rocket" value="Rocket">
+                                <label class="btn btn-outline-secondary w-100 py-3 d-flex flex-column align-items-center payment-label" for="pay_rocket">
+                                    <img src="https://dutchbanglabank.com/rocket/img/rocket-logo.png" style="height:42px;object-fit:contain;" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                                    <span style="display:none;font-size:1.8rem;background:#8832a8;color:white;border-radius:50%;width:42px;height:42px;line-height:42px;text-align:center;">R</span>
+                                    <span class="fw-bold mt-1" style="color:#8832a8;font-size:0.85rem;">Rocket</span>
+                                </label>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="radio" class="btn-check" name="payment" id="pay_cod" value="Cash on Delivery">
+                                <label class="btn btn-outline-secondary w-100 py-3 d-flex flex-column align-items-center payment-label" for="pay_cod">
+                                    <span style="font-size:2.2rem;">💵</span>
+                                    <span class="fw-bold mt-1" style="color:#28a745;font-size:0.85rem;">Cash on Delivery</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-light rounded mt-3">
+                        <h6>Total Payable: <strong id="checkoutTotal" style="color: #ff85a2;">৳0</strong></h6>
+                    </div>
+                    <div class="mt-3">
+                        <button type="submit" class="btn w-100 py-2 fw-bold" style="background-color: #ff85a2; color: white;">✅ Confirm Order</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== ORDER SUCCESS MODAL ===== -->
+<div class="modal fade" id="orderSuccessModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #28a745; color: white;">
+                <h5 class="modal-title">✅ Order Confirmed!</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="orderSuccessBody"></div>
+            <div class="modal-footer d-flex justify-content-between align-items-center">
+                <div id="orderQRCode" style="width:80px;height:80px;"></div>
+                <div class="d-flex gap-2">
+                    <button class="btn" style="background:#ff85a2;color:white;" onclick="downloadOrderPDF()">📄 PDF Receipt</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MY ORDERS MODAL ===== -->
+<div class="modal fade" id="myOrdersModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #ff85a2; color:white;">
+                <h5 class="modal-title">📦 My Orders</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="myOrdersBody"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== ADMIN LOGIN MODAL ===== -->
+<div class="modal fade" id="adminLoginModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#333;color:white;">
+                <h5 class="modal-title">🔐 Admin Login</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="adminLoginForm">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" id="adminUser" placeholder="admin">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="adminPass" placeholder="••••••••">
+                    </div>
+                    <p id="adminLoginError" class="text-danger d-none">❌ Wrong username or password!</p>
+                    <button type="submit" class="btn w-100 fw-bold" style="background:#333;color:white;">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== ADMIN PANEL MODAL ===== -->
+<div class="modal fade" id="adminPanelModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#333;color:white;">
+                <h5 class="modal-title">⚙️ Admin Panel — Glow & Glam</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Tabs -->
+                <ul class="nav nav-tabs mb-3" id="adminTabs">
+                    <li class="nav-item">
+                        <button class="nav-link active" onclick="showAdminTab('addProduct')">➕ Add Product</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" onclick="showAdminTab('orderList')">📋 Order Management</button>
+                    </li>
+                </ul>
+
+                <!-- ADD PRODUCT TAB -->
+                <div id="adminTab_addProduct">
+                    <form id="addProductForm" class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="newProductName" placeholder="e.g. Rose Lipstick" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Price (৳)</label>
+                            <input type="number" class="form-control" id="newProductPrice" placeholder="850" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Category</label>
+                            <input type="text" class="form-control" id="newProductCategory" placeholder="Skincare">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Product Description</label>
+                            <input type="text" class="form-control" id="newProductDesc" placeholder="e.g. Long-lasting matte finish lipstick">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Product Details <small class="text-muted">(Spec: Value | Spec: Value ...)</small></label>
+                            <textarea class="form-control" id="newProductDetails" rows="3" placeholder="Shade: Red | Volume: 10ml | Skin Type: All | Duration: 8 Hours"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Product Image</label>
+                            <div class="d-flex gap-2 mb-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('imgTabUrl').style.display='block';document.getElementById('imgTabUpload').style.display='none';this.classList.add('active');this.nextElementSibling.classList.remove('active')">🔗 URL</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('imgTabUpload').style.display='block';document.getElementById('imgTabUrl').style.display='none';this.classList.add('active');this.previousElementSibling.classList.remove('active')">📁 Upload</button>
+                            </div>
+                            <div id="imgTabUrl">
+                                <input type="url" class="form-control" id="newProductImg" placeholder="https://images.unsplash.com/...">
+                            </div>
+                            <div id="imgTabUpload" style="display:none;">
+                                <input type="file" class="form-control" id="newProductImgFile" accept="image/*" onchange="previewAdminImg(this)">
+                                <div id="adminImgPreviewWrapper" style="display:none;margin-top:8px;">
+                                    <img id="adminImgPreview" src="" style="height:80px;border-radius:8px;object-fit:cover;">
+                                    <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeUploadedImg()">🗑 Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn fw-bold" style="background:#ff85a2;color:white;">✅ Add Product</button>
+                        </div>
+                    </form>
+                    <div id="adminProductList" class="row g-3 mt-3"></div>
+                </div>
+
+                <!-- ORDER MANAGEMENT TAB -->
+                <div id="adminTab_orderList" class="d-none">
+                    <div id="adminOrderList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// =============================================
+// DATA STORE
+// =============================================
+let cart = {};
+let orders = JSON.parse(localStorage.getItem('glam_orders') || '[]');
+let adminProducts = JSON.parse(localStorage.getItem('glam_products') || '[]');
+let lastOrder = null;
+
+const cartBadge = document.getElementById('cart-count');
+const cartList  = document.getElementById('cart-items-list');
+
+// =============================================
+// SEARCH / SUGGESTION
+// =============================================
+const baseProducts = ["Matte Lipstick","Organic Serum","Eyeshadow Palette","Gentle Cleanser","Day Cream","Floral Perfume","Gel Nail Polish","Clay Mask"];
+const searchInput = document.getElementById('searchInput');
+const suggBox = document.getElementById('suggestionBox');
+
+searchInput.oninput = function() {
+    let val = this.value.toLowerCase();
+    suggBox.innerHTML = '';
+    if (val) {
+        let all = [...baseProducts, ...adminProducts.map(p=>p.name)];
+        let filtered = all.filter(p => p.toLowerCase().includes(val));
+        filtered.forEach(p => {
+            let div = document.createElement('div');
+            div.innerHTML = p;
+            div.className = 'suggestion-item list-group-item';
+            div.onclick = () => { searchInput.value = p; suggBox.style.display = 'none'; };
+            suggBox.appendChild(div);
+        });
+        suggBox.style.display = filtered.length ? 'block' : 'none';
+    } else { suggBox.style.display = 'none'; }
+};
+document.addEventListener('click', e => {
+    if (!searchInput.contains(e.target) && !suggBox.contains(e.target)) suggBox.style.display = 'none';
+});
+
+// =============================================
+// PRICE PARSER (Bangla + English digits)
+// =============================================
+const b2e = {'০':'0','১':'1','২':'2','৩':'3','৪':'4','৫':'5','৬':'6','৭':'7','৮':'8','৯':'9'};
+function parsePrice(text) {
+    let n = "";
+    for (let c of text) { if (b2e[c]) n += b2e[c]; else if (/[0-9]/.test(c)) n += c; }
+    return parseInt(n) || 0;
+}
+
+// =============================================
+// CART
+// =============================================
+function attachCartListeners() {
+    document.querySelectorAll('.btn-buy').forEach(btn => {
+        btn.onclick = function() {
+            const wrapper = this.closest('.card-body') || this.parentElement;
+            const card = this.closest('.card');
+            const name  = card.querySelector('.card-title').innerText;
+            const price = parsePrice(card.querySelector('.fw-bold').innerText);
+            // Get qty from input if present
+            const qtyInput = this.parentElement.querySelector('.qty-input');
+            const qty = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
+            if (cart[name]) {
+                cart[name].quantity += qty;
+            } else {
+                cart[name] = {price, quantity: qty};
+            }
+            updateCartUI();
+            this.innerText = `✓ ${qty} Added!`;
+            this.style.background = '#28a745';
+            const b = this;
+            setTimeout(() => { b.innerText = 'Add to Cart'; b.style.background = ''; }, 1000);
+        };
+    });
+}
+attachCartListeners();
+
+function updateCartUI() {
+    cartList.innerHTML = '';
+    let total=0, count=0;
+    Object.keys(cart).forEach(name => {
+        const item = cart[name];
+        const sub  = item.price * item.quantity;
+        total += sub; count += item.quantity;
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center py-2';
+        li.innerHTML = `
+            <div><strong style="color:#ff85a2">${name}</strong><br>
+            <small class="text-muted">৳${item.price} × ${item.quantity} = ৳${sub}</small></div>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-sm btn-outline-secondary" onclick="changeQty('${name}',-1)">−</button>
+                <span class="fw-bold">${item.quantity}</span>
+                <button class="btn btn-sm btn-outline-secondary" onclick="changeQty('${name}',1)">+</button>
+                <i class="bi bi-trash text-danger ms-2" style="cursor:pointer" onclick="removeItem('${name}')"></i>
+            </div>`;
+        cartList.appendChild(li);
+    });
+    cartBadge.innerText = count;
+    if (!count) {
+        cartList.innerHTML = '<li class="list-group-item text-muted text-center">Your cart is empty!</li>';
+    } else {
+        const li = document.createElement('li');
+        li.className = 'list-group-item list-group-item-warning d-flex justify-content-between fw-bold';
+        li.innerHTML = `<span>Total:</span><span>৳${total}</span>`;
+        cartList.appendChild(li);
+    }
+}
+
+function changeQty(name, d) {
+    if (!cart[name]) return;
+    cart[name].quantity += d;
+    if (cart[name].quantity <= 0) delete cart[name];
+    updateCartUI();
+}
+function removeItem(name) { delete cart[name]; updateCartUI(); }
+
+// =============================================
+// CHECKOUT
+// =============================================
+function openCheckout() {
+    if (!Object.keys(cart).length) { alert("Your cart is empty!"); return; }
+    bootstrap.Modal.getInstance(document.getElementById('cartModal')).hide();
+    new bootstrap.Modal(document.getElementById('checkoutModal')).show();
+    let total = Object.keys(cart).reduce((s,n)=>s+cart[n].price*cart[n].quantity,0);
+    document.getElementById('checkoutTotal').innerText = '৳' + total;
+}
+
+document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const payment = document.querySelector('input[name="payment"]:checked');
+    if (!payment) { alert("Please select a payment method!"); return; }
+
+    const name    = document.getElementById('userName').value;
+    const phone   = document.getElementById('userPhone').value;
+    const address = document.getElementById('userAddress').value;
+    const total   = Object.keys(cart).reduce((s,n)=>s+cart[n].price*cart[n].quantity,0);
+
+    const order = {
+        id: 'ORD-' + Date.now(),
+        date: new Date().toLocaleString('bn-BD'),
+        customer: name, phone, address,
+        payment: payment.value,
+        items: JSON.parse(JSON.stringify(cart)),
+        total,
+        status: 'Delivery within 3 days'
+    };
+
+    orders.push(order);
+    localStorage.setItem('glam_orders', JSON.stringify(orders));
+    lastOrder = order;
+
+    // Close checkout, show success
+    bootstrap.Modal.getInstance(document.getElementById('checkoutModal')).hide();
+    showOrderSuccess(order);
+
+    cart = {};
+    updateCartUI();
+    this.reset();
+});
+
+function showOrderSuccess(order) {
+    const itemRows = Object.keys(order.items).map(n =>
+        `<tr><td>${n}</td><td>${order.items[n].quantity}</td><td>৳${order.items[n].price * order.items[n].quantity}</td></tr>`
+    ).join('');
+
+    document.getElementById('orderSuccessBody').innerHTML = `
+        <div class="text-center py-3" style="background:linear-gradient(135deg,#ff85a2,#f48fb1);border-radius:12px;margin-bottom:16px;">
+            <div style="font-size:3.5rem">🎉</div>
+            <h4 class="text-white fw-bold mt-1">ধন্যবাদ ${order.customer}!</h4>
+            <p class="text-white opacity-75 mb-0">আপনার অর্ডার সফলভাবে গ্রহণ করা হয়েছে</p>
+        </div>
+        <div class="row g-2 mb-3">
+            <div class="col-6">
+                <div class="bg-light rounded p-2 text-center">
+                    <small class="text-muted d-block">Order ID</small>
+                    <strong style="color:#ff85a2;font-size:0.8rem">${order.id}</strong>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="bg-light rounded p-2 text-center">
+                    <small class="text-muted d-block">Payment</small>
+                    <strong>${order.payment}</strong>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="bg-light rounded p-2 text-center">
+                    <small class="text-muted d-block">Phone</small>
+                    <strong>${order.phone}</strong>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="bg-light rounded p-2 text-center">
+                    <small class="text-muted d-block">Status</small>
+                    <span class="badge bg-info text-dark">${order.status}</span>
+                </div>
+            </div>
+        </div>
+        <p class="text-muted small mb-2"><strong>📍</strong> ${order.address}</p>
+        <table class="table table-sm table-bordered">
+            <thead class="table-pink" style="background:#fff0f4;">
+                <tr><th>Product</th><th>Qty</th><th>Amount</th></tr>
+            </thead>
+            <tbody>${itemRows}</tbody>
+            <tfoot>
+                <tr style="background:#fff0f4;"><th colspan="2" class="text-end">মোট মূল্য</th><th style="color:#ff85a2;font-size:1.1rem;">৳${order.total}</th></tr>
+            </tfoot>
+        </table>
+        <p class="text-center text-muted small mt-2">আমরা শীঘ্রই আপনার সাথে যোগাযোগ করবো 💌</p>`;
+
+    new bootstrap.Modal(document.getElementById('orderSuccessModal')).show();
+    setTimeout(() => generateQRCode(order.id), 400);
+}
+
+// =============================================
+// MY ORDERS (user view)
+// =============================================
+function showMyOrders() {
+    const body = document.getElementById('myOrdersBody');
+    const fresh = JSON.parse(localStorage.getItem('glam_orders') || '[]');
+    if (!fresh.length) {
+        body.innerHTML = '<p class="text-muted text-center py-4">No orders yet!</p>';
+    } else {
+        body.innerHTML = fresh.map(o => `
+            <div class="card mb-3 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>${o.id}</strong> &nbsp;
+                            <span class="badge ${statusBadge(o.status)}">${o.status}</span>
+                        </div>
+                        <small class="text-muted">${o.date}</small>
+                    </div>
+                    <p class="mb-1 mt-2">🛍️ ${Object.keys(o.items).join(', ')}</p>
+                    <p class="mb-0">💳 ${o.payment} &nbsp;|&nbsp; <strong>৳${o.total}</strong></p>
+                </div>
+            </div>`).join('');
+    }
+    new bootstrap.Modal(document.getElementById('myOrdersModal')).show();
+}
+function statusBadge(s) {
+    if (s==='Delivered') return 'bg-success';
+    if (s==='Delivery within 3 days') return 'bg-info text-dark';
+    return 'bg-warning text-dark';
+}
+
+// =============================================
+// PDF RECEIPT
+// =============================================
+function downloadOrderPDF() {
+    if (!lastOrder) return;
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFont('helvetica');
+    doc.setFontSize(18);
+    doc.setTextColor(255, 133, 162);
+    doc.text('GLOW & GLAM', 105, 20, {align:'center'});
+    doc.setFontSize(12);
+    doc.setTextColor(0,0,0);
+    doc.text('ORDER RECEIPT', 105, 30, {align:'center'});
+    doc.line(15, 33, 195, 33);
+    doc.setFontSize(10);
+    doc.text(`Order ID : ${lastOrder.id}`, 15, 42);
+    doc.text(`Date     : ${lastOrder.date}`, 15, 50);
+    doc.text(`Customer : ${lastOrder.customer}`, 15, 58);
+    doc.text(`Phone    : ${lastOrder.phone}`, 15, 66);
+    doc.text(`Address  : ${lastOrder.address}`, 15, 74);
+    doc.text(`Payment  : ${lastOrder.payment}`, 15, 82);
+    doc.text(`Status   : ${lastOrder.status}`, 15, 90);
+    doc.line(15, 95, 195, 95);
+    doc.setFontSize(11);
+    doc.text('Product', 15, 104);
+    doc.text('Qty', 120, 104);
+    doc.text('Amount', 160, 104);
+    doc.line(15, 107, 195, 107);
+    let y = 115;
+    Object.keys(lastOrder.items).forEach(name => {
+        const it = lastOrder.items[name];
+        doc.setFontSize(10);
+        doc.text(name.substring(0,35), 15, y);
+        doc.text(String(it.quantity), 120, y);
+        doc.text('BDT ' + (it.price * it.quantity), 160, y);
+        y += 10;
+    });
+    doc.line(15, y, 195, y); y+=8;
+    doc.setFontSize(12);
+    doc.setFont('helvetica','bold');
+    doc.text('TOTAL', 120, y);
+    doc.text('BDT ' + lastOrder.total, 160, y);
+    doc.save(`Receipt_${lastOrder.id}.pdf`);
+}
+
+// =============================================
+// ADMIN LOGIN
+// =============================================
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'admin123';
+
+// "Add Product" nav link opens admin login
+document.querySelector('a[href="LogIn.html"]').addEventListener('click', function(e) {
+    e.preventDefault();
+    new bootstrap.Modal(document.getElementById('adminLoginModal')).show();
+});
+
+document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const u = document.getElementById('adminUser').value;
+    const p = document.getElementById('adminPass').value;
+    if (u === ADMIN_USER && p === ADMIN_PASS) {
+        bootstrap.Modal.getInstance(document.getElementById('adminLoginModal')).hide();
+        setTimeout(() => {
+            renderAdminProducts();
+            renderAdminOrders();
+            new bootstrap.Modal(document.getElementById('adminPanelModal')).show();
+        }, 400);
+        document.getElementById('adminLoginError').classList.add('d-none');
+    } else {
+        document.getElementById('adminLoginError').classList.remove('d-none');
+    }
+});
+
+// =============================================
+// ADMIN PANEL TABS
+// =============================================
+function showAdminTab(tab) {
+    document.querySelectorAll('[id^="adminTab_"]').forEach(el => el.classList.add('d-none'));
+    document.getElementById('adminTab_' + tab).classList.remove('d-none');
+    document.querySelectorAll('#adminTabs .nav-link').forEach(el => el.classList.remove('active'));
+    event.target.classList.add('active');
+    if (tab === 'orderList') renderAdminOrders();
+}
+
+// =============================================
+// ADD PRODUCT (admin)
+// =============================================
+document.getElementById('addProductForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const fileInput = document.getElementById('newProductImgFile');
+    const urlInput  = document.getElementById('newProductImg').value;
+
+    function saveProduct(imgSrc) {
+        const product = {
+            name: document.getElementById('newProductName').value,
+            price: parseInt(document.getElementById('newProductPrice').value),
+            category: document.getElementById('newProductCategory').value || 'General',
+            desc: document.getElementById('newProductDesc').value || '',
+            details: document.getElementById('newProductDetails').value || '',
+            img: imgSrc || 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=500&q=80'
+        };
+        adminProducts.push(product);
+        localStorage.setItem('glam_products', JSON.stringify(adminProducts));
+        renderAdminProducts();
+        addProductCardToPage(product);
+        addCategoryToNavbar(product.category);
+        document.getElementById('adminImgPreviewWrapper').style.display='none';
+        document.getElementById('adminImgPreview').src='';
+        e.target.reset();
+        alert('✅ Product added successfully!');
+    }
+
+    if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = ev => saveProduct(ev.target.result);
+        reader.readAsDataURL(fileInput.files[0]);
+    } else {
+        saveProduct(urlInput);
+    }
+});
+
+function previewAdminImg(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            document.getElementById('adminImgPreview').src = e.target.result;
+            document.getElementById('adminImgPreviewWrapper').style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+function removeUploadedImg() {
+    document.getElementById('newProductImgFile').value = '';
+    document.getElementById('adminImgPreview').src = '';
+    document.getElementById('adminImgPreviewWrapper').style.display = 'none';
+}
+
+function renderAdminProducts() {
+    const fresh = JSON.parse(localStorage.getItem('glam_products') || '[]');
+    adminProducts = fresh;
+    const container = document.getElementById('adminProductList');
+    if (!fresh.length) { container.innerHTML = '<p class="text-muted">No products added yet.</p>'; return; }
+    container.innerHTML = fresh.map((p,i) => `
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <img src="${p.img}" class="card-img-top" style="height:140px;object-fit:cover;">
+                <div class="card-body text-center p-2">
+                    <strong>${p.name}</strong><br>
+                    <small class="text-muted">${p.category}</small><br>
+                    <span style="color:#ff85a2;">৳${p.price}</span><br>
+                    <button class="btn btn-sm btn-outline-danger mt-1" onclick="deleteAdminProduct(${i})">🗑 Delete</button>
+                </div>
+            </div>
+        </div>`).join('');
+}
+
+function deleteAdminProduct(i) {
+    if (!confirm('Delete this product?')) return;
+    adminProducts.splice(i,1);
+    localStorage.setItem('glam_products', JSON.stringify(adminProducts));
+    renderAdminProducts();
+}
+
+function addProductCardToPage(p) {
+    const section = document.querySelector('#productGrid');
+    const col = document.createElement('div');
+    col.className = 'col-md-3 product-col';
+    col.setAttribute('data-category', p.category);
+    col.innerHTML = `
+        <div class="card product-card" style="cursor:pointer;"
+            data-name="${p.name}"
+            data-desc="${p.desc||p.category}"
+            data-price="৳${p.price}"
+            data-category="${p.category}"
+            data-img="${p.img}"
+            data-details="${p.details||''}">
+            <div class="position-relative" onclick="openProductModal(this.closest('.card'))" style="cursor:pointer;">
+                <img src="${p.img}" class="card-img-top" alt="${p.name}">
+                <span class="position-absolute top-0 end-0 m-2 badge" style="background:#ff85a2;">${p.category}</span>
+            </div>
+            <div class="card-body text-center">
+                <h5 class="card-title" onclick="openProductModal(this.closest(\'.card\'))" style="cursor:pointer;color:#ff85a2;">${p.name}</h5>
+                <p class="text-muted small">${p.desc||p.category}</p>
+                <p class="fw-bold">৳${p.price}</p>
+                <button class="btn btn-buy w-100">Add to Cart</button>
+            </div>
+        </div>`;
+    section.appendChild(col);
+    const card = col.querySelector('.card');
+    card.onclick = function() { openProductModal(this); };
+    col.querySelector('.btn-buy').onclick = function(e) {
+        e.stopPropagation();
+        const qtyInput = this.parentElement.querySelector('.qty-input');
+        const qty = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
+        if (cart[p.name]) { cart[p.name].quantity += qty; }
+        else { cart[p.name] = {price:p.price, quantity:qty}; }
+        updateCartUI();
+        this.innerText = `✓ ${qty} Added!`; this.style.background='#28a745';
+        const b=this; setTimeout(()=>{b.innerText='Add to Cart';b.style.background='';},1000);
+    };
+}
+
+// Load admin-added products on page load
+function addCategoryToNavbar(cat) {
+    const existing = ['All','Lipstick','Skincare','Eyes','Fragrance','Nails'];
+    if (existing.includes(cat)) return;
+    const container = document.getElementById('extraCategoryItems');
+    // Check if already added
+    if (container.querySelector(`[data-cat="${cat}"]`)) return;
+    const li = document.createElement('li');
+    li.setAttribute('data-cat', cat);
+    li.innerHTML = `<a class="dropdown-item rounded-2 py-2" href="#" onclick="filterCategory('${cat}');return false;"><span class="me-2">✨</span>${cat}</a>`;
+    container.appendChild(li);
+}
+
+(function loadSavedProducts() {
+    adminProducts.forEach(p => {
+        addProductCardToPage(p);
+        addCategoryToNavbar(p.category);
+    });
+})();
+
+// =============================================
+// ORDER MANAGEMENT (admin)
+// =============================================
+const STATUS_OPTIONS = ['On The Way', 'Delivery within 3 days', 'Delivered'];
+
+function renderAdminOrders() {
+    const fresh = JSON.parse(localStorage.getItem('glam_orders') || '[]');
+    orders = fresh;
+    const container = document.getElementById('adminOrderList');
+    if (!fresh.length) { container.innerHTML = '<p class="text-muted text-center py-4">No orders yet.</p>'; return; }
+
+    container.innerHTML = fresh.map((o,i) => {
+        const itemRows = Object.keys(o.items).map(n =>
+            `<tr><td>${n}</td><td>${o.items[n].quantity}</td><td>৳${o.items[n].price * o.items[n].quantity}</td></tr>`
+        ).join('');
+        return `
+        <div class="card mb-3 shadow-sm border-0">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>${o.id}</strong>
+                <div class="d-flex gap-2 align-items-center">
+                    <select class="form-select form-select-sm" style="width:auto;" onchange="updateOrderStatus(${i}, this.value)">
+                        ${STATUS_OPTIONS.map(s=>`<option ${o.status===s?'selected':''} value="${s}">${s}</option>`).join('')}
+                    </select>
+                    <button class="btn btn-sm btn-outline-danger" onclick="cancelOrder(${i})">❌ Cancel</button>
+                    <button class="btn btn-sm" style="background:#ff85a2;color:white;" onclick="downloadAdminPDF(${i})">📄 PDF</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-5">
+                        <p><strong>👤</strong> ${o.customer} &nbsp;|&nbsp; 📞 ${o.phone}</p>
+                        <p><strong>📍</strong> ${o.address}</p>
+                        <p><strong>💳</strong> ${o.payment} &nbsp;|&nbsp; 🕐 ${o.date}</p>
+                    </div>
+                    <div class="col-md-7">
+                        <table class="table table-sm mb-0">
+                            <thead><tr><th>Product</th><th>Qty</th><th>Amount</th></tr></thead>
+                            <tbody>${itemRows}</tbody>
+                            <tfoot><tr><th colspan="2">Total</th><th>৳${o.total}</th></tr></tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function updateOrderStatus(i, status) {
+    orders[i].status = status;
+    localStorage.setItem('glam_orders', JSON.stringify(orders));
+}
+
+function cancelOrder(i) {
+    if (!confirm('Cancel this order?')) return;
+    orders.splice(i,1);
+    localStorage.setItem('glam_orders', JSON.stringify(orders));
+    renderAdminOrders();
+}
+
+function downloadAdminPDF(i) {
+    lastOrder = orders[i];
+    downloadOrderPDF();
+}
+
+// =============================================
+// CATEGORY FILTER
+// =============================================
+function filterCategory(cat) {
+    const cols = document.querySelectorAll('.product-col');
+    const badge = document.getElementById('categoryBadge');
+    badge.textContent = cat === 'All' ? 'All Products' : cat;
+    cols.forEach(col => {
+        const colCat = col.getAttribute('data-category');
+        if (cat === 'All' || colCat === cat) {
+            col.style.display = '';
+            col.style.animation = 'fadeIn 0.3s ease';
+        } else {
+            col.style.display = 'none';
+        }
+    });
+    // scroll to products
+    document.getElementById('products').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// =============================================
+// PRODUCT DETAILS MODAL
+// =============================================
+function openProductModal(card) {
+    const name    = card.getAttribute('data-name');
+    const desc    = card.getAttribute('data-desc');
+    const price   = card.getAttribute('data-price');
+    const cat     = card.getAttribute('data-category');
+    const img     = card.getAttribute('data-img');
+    const details = card.getAttribute('data-details') || '';
+
+    document.getElementById('pmTitle').textContent    = name;
+    document.getElementById('pmName').textContent     = name;
+    document.getElementById('pmDesc').textContent     = desc;
+    document.getElementById('pmPrice').textContent    = price;
+    document.getElementById('pmCategory').textContent = cat;
+    document.getElementById('pmImg').src              = img;
+
+    // Parse "Key: Value | Key: Value" details into a nice table
+    if (details.trim()) {
+        const rows = details.split('|').map(pair => {
+            const [k, ...v] = pair.split(':');
+            return `<tr><td class="fw-semibold text-muted pe-3" style="white-space:nowrap;">${(k||'').trim()}</td><td>${(v.join(':') || '').trim()}</td></tr>`;
+        }).join('');
+        document.getElementById('pmDetails').innerHTML =
+            `<table class="table table-sm table-borderless mb-0">${rows}</table>`;
+    } else {
+        document.getElementById('pmDetails').innerHTML = '';
+    }
+
+    // Parse price for add to cart
+    const priceNum = parsePrice(price);
+        document.getElementById('pmAddCart').onclick = function() {
+        const qty = parseInt(document.getElementById('pmQty').value) || 1;
+        if (cart[name]) {
+            cart[name].quantity += qty;
+        } else {
+            cart[name] = {price: priceNum, quantity: qty};
+        }
+        updateCartUI();
+        this.textContent = `✓ ${qty} Added!`;
+        this.style.background = '#28a745';
+        const b = this;
+        setTimeout(() => { b.textContent = '🛒 Add to Cart'; b.style.background = ''; }, 1200);
+    };
+
+    new bootstrap.Modal(document.getElementById('productModal')).show();
+}
+
+// =============================================
+// =============================================
+// COUNTER ANIMATION
+// =============================================
+function animateCounters() {
+    document.querySelectorAll('.counter').forEach(el => {
+        const target = parseInt(el.getAttribute('data-target'));
+        let count = 0;
+        const step = Math.ceil(target / 60);
+        const timer = setInterval(() => {
+            count = Math.min(count + step, target);
+            el.textContent = count.toLocaleString() + (target >= 1000 ? '+' : '%');
+            if (count >= target) clearInterval(timer);
+        }, 30);
+    });
+}
+const statsEl = document.querySelector('.counter');
+if (statsEl) {
+    const obs = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting) { animateCounters(); obs.disconnect(); }
+    }, {threshold: 0.3});
+    obs.observe(statsEl.closest('section'));
+}
+
+// "My Orders" button — add to navbar dynamically
+// =============================================
+(function addMyOrdersBtn() {
+    const navLinks = document.querySelector('.navbar-nav.me-auto');
+    const li = document.createElement('li');
+    li.className = 'nav-item';
+    li.innerHTML = `<a class="nav-link fw-semibold" href="#" onclick="showMyOrders();return false;">My Orders</a>`;
+    navLinks.appendChild(li);
+})();
+</script>
+</body>
+</html>
